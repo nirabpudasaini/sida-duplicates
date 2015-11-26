@@ -1,0 +1,91 @@
+---
+title: "SIDA DATA"
+output: html_document
+---
+
+
+```{r, echo=FALSE, message=FALSE}
+setwd("/home/nirab/Programming/Projects/R/sida-duplicates/")
+school = read.csv (file = "School-2015-11-19-05-32-27.csv", na.strings = "n/a")
+buildings = read.csv(file = "Buildings-2015-11-19-05-32-46.csv", na.strings = "n/a")
+elements = read.csv(file = "Building_Element-2015-11-19-05-35-47.csv", na.strings = "n/a")
+```
+
+```{r, echo=FALSE, message=FALSE}
+findDuplicates <- function(EMIS, dataSet){
+  frequencyOfUnique <- data.frame(table(EMIS))
+  FrequencyOfDuplicates <- frequencyOfUnique[frequencyOfUnique$Freq > 1, ]
+  duplicateData <- subset(dataSet, EMIS %in% FrequencyOfDuplicates$EMIS)
+  return(duplicateData)
+}
+```
+
+```{r, echo=FALSE, message=FALSE}
+schoolDuplicate <- findDuplicates(school$general_detail.verification.save_name, school)
+schoolDuplicateTable <- schoolDuplicate[,c("general_detail.verification.save_name", "surveyor_id", "meta.instanceID", "X_submission_time")]
+colnames(schoolDuplicateTable) <- c("EMIS","Engineering Firm", "Instance ID", "Submission Date and Time")
+schoolDuplicateTable <- schoolDuplicateTable[order(schoolDuplicateTable$`Engineering Firm`,schoolDuplicateTable$EMIS),]
+
+buildingsDuplicate <- findDuplicates(buildings$building_assessment.general_building_info.general_building_info_1.verification.save_name, buildings)
+buildingsDuplicateTable <- buildingsDuplicate[,c("building_assessment.general_building_info.general_building_info_1.verification.save_name", "surveyor_id", "meta.instanceID", "X_submission_time")]
+colnames(buildingsDuplicateTable) <- c("EMIS","Engineering Firm", "Instance ID", "Submission Date and Time")
+buildingsDuplicateTable <- buildingsDuplicateTable[order(buildingsDuplicateTable$`Engineering Firm`,buildingsDuplicateTable$EMIS),]
+
+elementsDuplicate <- findDuplicates(elements$piece_assessment.verification.save_name, elements)
+elementsDuplicateTable <- elementsDuplicate[,c("piece_assessment.verification.save_name", "surveyor_id", "meta.instanceID", "X_submission_time")]
+colnames(elementsDuplicateTable) <- c("EMIS","Engineering Firm", "Instance ID", "Submission Date and Time")
+elementsDuplicateTable <- elementsDuplicateTable[order(elementsDuplicateTable$`Engineering Firm`,elementsDuplicateTable$EMIS),]
+```
+
+```{r, echo=FALSE, message=FALSE}
+write.csv(schoolDuplicate[schoolDuplicate$general_detail.genral_detail0.district == 31 ,], file = "MakwanpurSchoolDuplicates.csv")
+write.csv(schoolDuplicate[schoolDuplicate$general_detail.genral_detail0.district == 20 ,], file = "ShindhuliSchoolDuplicates.csv")
+write.csv(schoolDuplicate[schoolDuplicate$general_detail.genral_detail0.district == 26 ,], file = "BhaktapurSchoolDuplicates.csv")
+write.csv(schoolDuplicate[schoolDuplicate$general_detail.genral_detail0.district == 25 ,], file = "LalitpurSchoolDuplicates.csv")
+write.csv(schoolDuplicate[schoolDuplicate$general_detail.genral_detail0.district == 21 ,], file = "RamechappSchoolDuplicates.csv")
+write.csv(schoolDuplicate[schoolDuplicate$general_detail.genral_detail0.district == 24 ,], file = "KavreSchoolDuplicates.csv")
+
+
+write.csv(buildingsDuplicate[buildingsDuplicate$building_assessment.general_building_info.general_building_info_1.district == 31 ,], file = "MakwanpurBuildingDuplicates.csv")
+write.csv(buildingsDuplicate[buildingsDuplicate$building_assessment.general_building_info.general_building_info_1.district == 20 ,], file = "ShindhuliBuildingDuplicates.csv")
+write.csv(buildingsDuplicate[buildingsDuplicate$building_assessment.general_building_info.general_building_info_1.district == 26 ,], file = "BhaktapurBuildingDuplicates.csv")
+write.csv(buildingsDuplicate[buildingsDuplicate$building_assessment.general_building_info.general_building_info_1.district == 25 ,], file = "LalitpurBuildingDuplicates.csv")
+write.csv(buildingsDuplicate[buildingsDuplicate$building_assessment.general_building_info.general_building_info_1.district == 21 ,], file = "RamechappBuildingDuplicates.csv")
+write.csv(buildingsDuplicate[buildingsDuplicate$building_assessment.general_building_info.general_building_info_1.district == 24 ,], file = "KavreBuildingDuplicates.csv")
+
+write.csv(elementsDuplicate[elementsDuplicate$piece_assessment.district == 31 ,], file = "MakwanpurBuildingElementsDuplicates.csv")
+write.csv(elementsDuplicate[elementsDuplicate$piece_assessment.district == 20 ,], file = "ShindhuliBuildingElementsDuplicates.csv")
+write.csv(elementsDuplicate[elementsDuplicate$piece_assessment.district == 26 ,], file = "BhaktapurBuildingElementsDuplicates.csv")
+write.csv(elementsDuplicate[elementsDuplicate$piece_assessment.district == 25 ,], file = "LalitpurBuildingElementsDuplicates.csv")
+write.csv(elementsDuplicate[elementsDuplicate$piece_assessment.district == 21 ,], file = "RamechappBuildingElementsDuplicates.csv")
+write.csv(elementsDuplicate[elementsDuplicate$piece_assessment.district == 24 ,], file = "KavreElementsBuildingDuplicates.csv")
+```
+
+### School Duplicate Summary
+
+
+```{r, echo=FALSE, message=FALSE}
+knitr::kable(schoolDuplicateTable)
+```
+
+***
+
+### Building Duplicate Summary
+
+
+```{r, echo=FALSE, message=FALSE}
+knitr::kable(buildingsDuplicateTable)
+```
+
+***
+
+
+### Building Elements Duplicate Summary
+
+
+```{r, echo=FALSE, message=FALSE}
+knitr::kable(elementsDuplicateTable)
+```
+
+***
+
